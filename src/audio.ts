@@ -1,16 +1,17 @@
 // src/audio.ts
+
 export const audioCtx = new AudioContext();
 
-// 音名 → 周波数（前述）
+// C4〜C5 の音名と周波数（Hz）
 export const NOTES = {
-  C4: 261.63,
-  D4: 293.66,
-  E4: 329.63,
-  F4: 349.23,
-  G4: 392.0,
-  A4: 440.0,
-  B4: 493.88,
-  C5: 523.25,
+  C4: 261.63,   // ド
+  D4: 293.66,   // レ
+  E4: 329.63,   // ミ
+  F4: 349.23,   // ファ
+  G4: 392.0,    // ソ
+  A4: 440.0,    // ラ
+  B4: 493.88,   // シ
+  C5: 523.25,   // 高いド
 } as const;
 
 export type NoteName = keyof typeof NOTES;
@@ -18,7 +19,9 @@ export type WaveType = OscillatorType;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// 単音を鳴らす関数
+/**
+ * 単音を鳴らす
+ */
 export function playNote(
   freq: number,
   type: WaveType,
@@ -35,14 +38,15 @@ export function playNote(
 
   const now = audioCtx.currentTime;
 
-  // すぐ鳴らして、なめらかにフェードアウト
   osc.start(now);
   gain.gain.setValueAtTime(1, now);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
   osc.stop(now + duration);
 }
 
-// ドレミファソラシドを順番に鳴らす
+/**
+ * ドレミファソラシドを再生
+ */
 export async function playScale(
   type: WaveType,
   bpm = 120,
@@ -60,6 +64,43 @@ export async function playScale(
   ];
 
   for (const note of SCALE) {
+    playNote(NOTES[note], type);
+    await sleep(beatMs);
+  }
+}
+
+/**
+ * ジングルベル 1番フル（簡易 C メジャー版）
+ */
+export const JINGLE_FULL = [
+  // ♪ ジングルベル ジングルベル 鈴が鳴る
+  "E4", "E4", "E4",                  // ミ ミ ミ
+  "E4", "E4", "E4",                  // ミ ミ ミ
+  "E4", "G4", "C4", "D4", "E4",      // ミ ソ ド レ ミ
+  "F4", "F4", "F4", "F4",            // ファ ファ ファ ファ
+  "F4", "E4", "E4", "E4", "E4",      // ファ ミ ミ ミ ミ
+  "E4", "D4", "D4", "E4", "D4",      // ミ レ レ ミ レ
+  "G4",                              // ソ
+
+  // ♪ ジングルオールザウェイ〜 のところ
+  "E4", "E4", "E4",                  // ミ ミ ミ
+  "E4", "E4", "E4",                  // ミ ミ ミ
+  "E4", "G4", "C4", "D4", "E4",      // ミ ソ ド レ ミ
+  "F4", "F4", "F4", "F4",            // ファ ファ ファ ファ
+  "F4", "E4", "E4", "E4", "E4",      // ファ ミ ミ ミ ミ
+  "G4", "G4", "F4", "D4", "C4",      // ソ ソ ファ レ ド
+] as const;
+
+/**
+ * ジングルベル 1番を通しで再生
+ */
+export async function playJingleBellsFull(
+  type: WaveType = "triangle",
+  bpm = 140,
+) {
+  const beatMs = (60 / bpm) * 1000;
+
+  for (const note of JINGLE_FULL) {
     playNote(NOTES[note], type);
     await sleep(beatMs);
   }
