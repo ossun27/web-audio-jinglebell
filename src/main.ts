@@ -5,18 +5,24 @@ const audioCtx = new AudioContext();
 
 // C4〜C5 の音名と周波数（Hz）
 const NOTES = {
-  C4: 261.63,   // ド
-  D4: 293.66,   // レ
-  E4: 329.63,   // ミ
-  F4: 349.23,   // ファ
-  G4: 392.0,    // ソ
-  A4: 440.0,    // ラ
-  B4: 493.88,   // シ
-  C5: 523.25,   // 高いド
+  C4: 261.63, // ド
+  D4: 293.66, // レ
+  E4: 329.63, // ミ
+  F4: 349.23, // ファ
+  G4: 392.0,  // ソ
+  A4: 440.0,  // ラ
+  B4: 493.88, // シ
+  C5: 523.25, // 高いド
 } as const;
 
 type NoteName = keyof typeof NOTES;
 type WaveType = OscillatorType;
+type NoteOrRest = NoteName | "REST";
+
+type ScoreItem = {
+  note: NoteOrRest; // 音名 or 休符
+  length: number;   // 拍の長さ（1 = 基準、0.5 = 半分、2 = 2倍…）
+};
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -71,39 +77,95 @@ async function playScale(
 }
 
 /**
- * ジングルベル 1番フル（簡易 C メジャー版）
+ * 休符付きジングルベル 1番（簡易 C メジャー版）
  */
-const JINGLE_FULL = [
+const JINGLE_SCORE: ScoreItem[] = [
   // ♪ ジングルベル ジングルベル 鈴が鳴る
-  "E4", "E4", "E4",                  // ミ ミ ミ
-  "E4", "E4", "E4",                  // ミ ミ ミ
-  "E4", "G4", "C4", "D4", "E4",      // ミ ソ ド レ ミ
-  "F4", "F4", "F4", "F4",            // ファ ファ ファ ファ
-  "F4", "E4", "E4", "E4", "E4",      // ファ ミ ミ ミ ミ
-  "E4", "D4", "D4", "E4", "D4",      // ミ レ レ ミ レ
-  "G4",                              // ソ
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 1 },   // ミ──
 
-  // ♪ ジングルオールザウェイ〜 のところ
-  "E4", "E4", "E4",                  // ミ ミ ミ
-  "E4", "E4", "E4",                  // ミ ミ ミ
-  "E4", "G4", "C4", "D4", "E4",      // ミ ソ ド レ ミ
-  "F4", "F4", "F4", "F4",            // ファ ファ ファ ファ
-  "F4", "E4", "E4", "E4", "E4",      // ファ ミ ミ ミ ミ
-  "G4", "G4", "F4", "D4", "C4",      // ソ ソ ファ レ ド
-] as const;
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 1 },   // ミ──
+
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "G4", length: 0.5 }, // ソ
+  { note: "C4", length: 0.5 }, // ド
+  { note: "D4", length: 0.5 }, // レ
+  { note: "E4", length: 2 },   // ミ────
+
+  { note: "F4", length: 0.5 },  // ファ
+  { note: "F4", length: 0.5 },  // ファ
+  { note: "F4", length: 0.75 }, // ファー
+  { note: "F4", length: 0.25 }, // （ちょっとだけ）
+  { note: "F4", length: 0.5 },  // ファ
+
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "E4", length: 0.5 }, // ミ
+
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "D4", length: 0.5 }, // レ
+  { note: "D4", length: 0.5 }, // レ
+  { note: "E4", length: 0.5 }, // ミ
+  { note: "D4", length: 1 },   // レ──
+  { note: "G4", length: 1 },   // ソ──
+
+  // 1拍分の休符
+  { note: "REST", length: 1 },
+
+  // ♪ ジングルオールザウェイ〜
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 1 },
+
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 1 },
+
+  { note: "E4", length: 0.5 },
+  { note: "G4", length: 0.5 },
+  { note: "C4", length: 0.5 },
+  { note: "D4", length: 0.5 },
+  { note: "E4", length: 2 },
+
+  { note: "F4", length: 0.5 },
+  { note: "F4", length: 0.5 },
+  { note: "F4", length: 0.75 },
+  { note: "F4", length: 0.25 },
+  { note: "F4", length: 0.5 },
+
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 0.5 },
+  { note: "E4", length: 0.5 },
+
+  { note: "G4", length: 0.5 },
+  { note: "G4", length: 0.5 },
+  { note: "F4", length: 0.5 },
+  { note: "D4", length: 0.5 },
+  { note: "C4", length: 2 },
+];
 
 /**
- * ジングルベル 1番を通しで再生
+ * ジングルベル 1番を通しで再生（休符対応）
  */
 async function playJingleBellsFull(
   type: WaveType = "triangle",
   bpm = 140,
 ) {
-  const beatMs = (60 / bpm) * 1000;
+  const baseBeatMs = (60 / bpm) * 1000;
 
-  for (const note of JINGLE_FULL) {
-    playNote(NOTES[note], type);
-    await sleep(beatMs);
+  for (const item of JINGLE_SCORE) {
+    const durationMs = baseBeatMs * item.length;
+
+    if (item.note !== "REST") {
+      const toneDuration = item.length * 0.9;
+      playNote(NOTES[item.note], type, toneDuration);
+    }
+    await sleep(durationMs);
   }
 }
 
@@ -135,7 +197,11 @@ document.getElementById("btn-tri")?.addEventListener("click", () => {
   playScale("triangle");
 });
 
+// 波形セレクト
+const waveSelect = document.getElementById("wave-select") as HTMLSelectElement | null;
+
 // ジングルベルボタン
 document.getElementById("btn-jingle")?.addEventListener("click", () => {
-  playJingleBellsFull("triangle", 140);
+  const selectedWave = (waveSelect?.value ?? "triangle") as WaveType;
+  playJingleBellsFull(selectedWave, 140);
 });

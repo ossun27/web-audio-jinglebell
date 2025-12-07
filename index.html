@@ -35,10 +35,24 @@
     </section>
 
     <section>
-      <h2>ジングルベル（1 番フル）</h2>
-      <p>triangle 波形でジングルベル 1 番を演奏します。</p>
-      <button id="btn-jingle">▶ 再生</button>
+        <h2>ジングルベル（1 番フル）</h2>
+        <p>波形を選んでから「再生」ボタンを押すと、ジングルベルが鳴ります。</p>
+      
+        <label>
+          波形を選択：
+          <select id="wave-select">
+            <option value="triangle">triangle（三角波・おすすめ）</option>
+            <option value="sine">sine（正弦波）</option>
+            <option value="square">square（矩形波）</option>
+            <option value="sawtooth">sawtooth（のこぎり波）</option>
+          </select>
+        </label>
+      
+        <div style="margin-top: 0.5rem;">
+          <button id="btn-jingle">▶ ジングルベル再生</button>
+        </div>
     </section>
+      
 
     <section>
       <h2>注意</h2>
