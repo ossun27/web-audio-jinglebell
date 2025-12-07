@@ -1,0 +1,54 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Web Audio API × TypeScript × Jingle Bells</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        padding: 2rem;
+      }
+      h1 {
+        margin-bottom: 1rem;
+      }
+      section {
+        margin-bottom: 2rem;
+      }
+      button {
+        margin: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Web Audio API × TypeScript Demo</h1>
+
+    <section>
+      <h2>ドレミファソラシド（波形別）</h2>
+      <p>同じドレミでも、波形を変えると音色が変わります。</p>
+      <button id="btn-sine">sine（正弦波）</button>
+      <button id="btn-square">square（矩形波）</button>
+      <button id="btn-saw">sawtooth（のこぎり波）</button>
+      <button id="btn-tri">triangle（三角波）</button>
+    </section>
+
+    <section>
+      <h2>ジングルベル（1 番フル）</h2>
+      <p>triangle 波形でジングルベル 1 番を演奏します。</p>
+      <button id="btn-jingle">▶ 再生</button>
+    </section>
+
+    <section>
+      <h2>注意</h2>
+      <ul>
+        <li>Chrome の自動再生制限の都合で、最初にどこかをクリックしてから音が出ます。</li>
+        <li>音量にはご注意ください。</li>
+      </ul>
+    </section>
+
+    <!-- ビルド後の JS を読み込み -->
+    <script type="module" src="./dist/main.js"></script>
+  </body>
+</html>
