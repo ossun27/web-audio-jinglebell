@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ossun27/web-audio-jinglebell#readme",
   "description": "",
   "devDependencies": {
+    "http-server": "^14.1.1",
     "typescript": "^5.9.3"
   }
 }

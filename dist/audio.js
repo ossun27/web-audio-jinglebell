@@ -1,7 +1,8 @@
 // src/audio.ts
-export const audioCtx = new AudioContext();
+// ====== Web Audio のセットアップ ======
+const audioCtx = new AudioContext();
 // C4〜C5 の音名と周波数（Hz）
-export const NOTES = {
+const NOTES = {
     C4: 261.63, // ド
     D4: 293.66, // レ
     E4: 329.63, // ミ
@@ -15,7 +16,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /**
  * 単音を鳴らす
  */
-export function playNote(freq, type, duration = 0.4) {
+function playNote(freq, type, duration = 0.4) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = type;
@@ -29,9 +30,9 @@ export function playNote(freq, type, duration = 0.4) {
     osc.stop(now + duration);
 }
 /**
- * ドレミファソラシドを再生
+ * ドレミファソラシドを順番に鳴らす
  */
-export async function playScale(type, bpm = 120) {
+export async function playScale(type, bpm = 100) {
     const beatMs = (60 / bpm) * 1000;
     const SCALE = [
         "C4",
@@ -49,33 +50,76 @@ export async function playScale(type, bpm = 120) {
     }
 }
 /**
- * ジングルベル 1番フル（簡易 C メジャー版）
+ * 休符付きジングルベル 1番（簡易 C メジャー版）
+ * ※中身は今貼ってもらったものをそのまま利用
  */
-export const JINGLE_FULL = [
+const JINGLE_SCORE = [
     // ♪ ジングルベル ジングルベル 鈴が鳴る
-    "E4", "E4", "E4", // ミ ミ ミ
-    "E4", "E4", "E4", // ミ ミ ミ
-    "E4", "G4", "C4", "D4", "E4", // ミ ソ ド レ ミ
-    "F4", "F4", "F4", "F4", // ファ ファ ファ ファ
-    "F4", "E4", "E4", "E4", "E4", // ファ ミ ミ ミ ミ
-    "E4", "D4", "D4", "E4", "D4", // ミ レ レ ミ レ
-    "G4", // ソ
-    // ♪ ジングルオールザウェイ〜 のところ
-    "E4", "E4", "E4", // ミ ミ ミ
-    "E4", "E4", "E4", // ミ ミ ミ
-    "E4", "G4", "C4", "D4", "E4", // ミ ソ ド レ ミ
-    "F4", "F4", "F4", "F4", // ファ ファ ファ ファ
-    "F4", "E4", "E4", "E4", "E4", // ファ ミ ミ ミ ミ
-    "G4", "G4", "F4", "D4", "C4", // ソ ソ ファ レ ド
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 1 }, // ミ──
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 1 }, // ミ──
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "G4", length: 0.5 }, // ソ
+    { note: "C4", length: 0.5 }, // ド
+    { note: "D4", length: 0.5 }, // レ
+    { note: "E4", length: 2 }, // ミ────
+    { note: "F4", length: 0.5 }, // ファ
+    { note: "F4", length: 0.5 }, // ファ
+    { note: "F4", length: 0.75 }, // ファー
+    { note: "F4", length: 0.25 }, // ファ
+    { note: "F4", length: 0.5 }, // ファ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "D4", length: 0.5 }, // レ
+    { note: "D4", length: 0.5 }, // レ
+    { note: "E4", length: 0.5 }, // ミ
+    { note: "D4", length: 1 }, // レ──
+    { note: "G4", length: 1 }, // ソ──
+    // 1拍分の休符（今は 0.1 拍にしている）
+    { note: "REST", length: 0.1 },
+    // ♪ ジングルオールザウェイ〜
+    { note: "E4", length: 0.5 },
+    { note: "E4", length: 0.5 },
+    { note: "E4", length: 1 },
+    { note: "E4", length: 0.5 },
+    { note: "E4", length: 0.5 },
+    { note: "E4", length: 1 },
+    { note: "E4", length: 0.5 },
+    { note: "G4", length: 0.5 },
+    { note: "C4", length: 0.5 },
+    { note: "D4", length: 0.5 },
+    { note: "E4", length: 2 },
+    { note: "F4", length: 0.5 },
+    { note: "F4", length: 0.5 },
+    { note: "F4", length: 0.75 },
+    { note: "F4", length: 0.25 },
+    { note: "F4", length: 0.5 },
+    { note: "E4", length: 0.5 },
+    { note: "E4", length: 0.5 },
+    { note: "E4", length: 0.5 },
+    { note: "G4", length: 0.5 },
+    { note: "G4", length: 0.5 },
+    { note: "F4", length: 0.5 },
+    { note: "D4", length: 0.5 },
+    { note: "C4", length: 2 },
 ];
 /**
- * ジングルベル 1番を通しで再生
+ * ジングルベル 1番を通しで再生（休符対応）
  */
-export async function playJingleBellsFull(type = "triangle", bpm = 140) {
-    const beatMs = (60 / bpm) * 1000;
-    for (const note of JINGLE_FULL) {
-        playNote(NOTES[note], type);
-        await sleep(beatMs);
+export async function playJingleBellsFull(type, bpm = 140) {
+    const baseBeatMs = (60 / bpm) * 1000;
+    for (const item of JINGLE_SCORE) {
+        const durationMs = baseBeatMs * item.length;
+        if (item.note !== "REST") {
+            // いまは length そのまま使う設定
+            playNote(NOTES[item.note], type, item.length);
+        }
+        await sleep(durationMs);
     }
 }
 //# sourceMappingURL=audio.js.map
